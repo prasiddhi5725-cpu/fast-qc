@@ -1,5 +1,6 @@
 import argparse
 import gzip
+import sys
 from plot import plot_position_mean,plot_read_lengths,plot_gc_percentage
 
 def main():
@@ -28,6 +29,7 @@ def main():
 
     if not correct_file:
         print("Warning!!",output_file,"is incomplete.")
+        sys.exit(1)
 
 def open_fastq(filename):
     if filename.endswith(".gz"):
@@ -114,8 +116,11 @@ def process_file(filename,quality_threshold,output_file,verbose):
                     position_total[position]+=score
                     position_count[position]+=1
                     position+=1
-                    
-                mean_individual_score=individual_score/len(quality_score)
+
+                if len(quality_score)>0:
+                    mean_individual_score=individual_score/len(quality_score)
+                else:
+                    mean_individual_score=0
 
                 if mean_individual_score<quality_threshold:
                     low_quality_reads+=1
@@ -132,7 +137,8 @@ def process_file(filename,quality_threshold,output_file,verbose):
                     print("Mean quality of read",read_number,":",round(mean_individual_score,2))
                     print("GC % for read",read_number,"is: ",read_gc_percentage)
 
-            line_number+=1
+            if line!="":
+                line_number+=1
     
     if correct_file and line_number==0:
         print("The file is empty.")
@@ -180,8 +186,6 @@ def position_mean(position_total,position_count):
 def print_report(line_number,total_bases,n_count,total_score,gc_count,read_length_list,read_gc_list,quality_threshold,passed_reads,low_quality_reads,q_20,q_30,position_total,position_count,verbose):
     total_reads=line_number//4
     actual_bases=total_bases-n_count
-    mean_total_score=total_score/total_bases
-    print("Mean quality of the file:",round(mean_total_score,2))
     if actual_bases>0:
         file_gc_percentage=(gc_count/actual_bases)*100
         print("GC content is:",round(file_gc_percentage,2),"% .")
@@ -201,18 +205,25 @@ def print_report(line_number,total_bases,n_count,total_score,gc_count,read_lengt
     print("Quality threshold: ",quality_threshold)
     print("Reads passed: ",passed_reads)
     print("Reads removed: ",low_quality_reads)
- 
-    q_20_percentage=(q_20/total_bases)*100
-    q_30_percentage=(q_30/total_bases)*100
-    print("Bases with Q20 or higher: ", round(q_20_percentage,2),"%")
-    print("Bases with Q30 or higher: ", round(q_30_percentage,2),"%")
 
-    minimum_gc=min(read_gc_list)
-    maximum_gc=max(read_gc_list)
-    average_gc=sum(read_gc_list)/len(read_gc_list)
-    print("Minimum GC content: ", round(minimum_gc,2))
-    print("Maximum GC content: ", round(maximum_gc,2))
-    print("Average GC content: ", round(average_gc,2))
+    if total_bases>0:
+        average_quality=total_score/total_bases
+        print("Average quality score (Phred) is: ", round(average_quality,2))
+        q_20_percentage=(q_20/total_bases)*100
+        q_30_percentage=(q_30/total_bases)*100
+        print("Bases with Q20 or higher: ", round(q_20_percentage,2),"%")
+        print("Bases with Q30 or higher: ", round(q_30_percentage,2),"%")
+
+    if len(read_gc_list)>0:
+        print("GC content statistics:")
+        minimum_gc=min(read_gc_list)
+        maximum_gc=max(read_gc_list)
+        average_gc=sum(read_gc_list)/len(read_gc_list)
+        print("Minimum GC content: ", round(minimum_gc,2))
+        print("Maximum GC content: ", round(maximum_gc,2))
+        print("Average GC content: ", round(average_gc,2))
+    else:
+        print("No reads with identified bases to calculate GC content statistics.")
 
     if verbose:
         for i in range (len(read_length_list)):
