@@ -9,6 +9,7 @@ def main():
     parser.add_argument("-o","--output",default="filtered.fastq", help="Output file")
     parser.add_argument("--plot",action="store_true",help="Save quality and read length plots")
     parser.add_argument("--verbose",action="store_true",help="Show individual data for all reads")
+    parser.add_argument("--prefix",default="",help="Prefix for plot file names")
     args=parser.parse_args()
     uploaded_file=args.input
     quality_threshold=args.threshold
@@ -21,9 +22,9 @@ def main():
         if args.plot:
             means=list(position_mean(position_total,position_count))
             positions=list(range(1,len(means)+1))
-            plot_position_mean(positions,means,"quality_plot.png")
-            plot_read_lengths(read_length_list,"read_length_plot.png")
-            plot_gc_percentage(read_gc_list,"gc_plot.png")
+            plot_position_mean(positions,means,args.prefix+"quality_plot.png")
+            plot_read_lengths(read_length_list,args.prefix+"read_length_plot.png")
+            plot_gc_percentage(read_gc_list,args.prefix+"gc_plot.png")
 
     if not correct_file:
         print("Warning!!",output_file,"is incomplete.")

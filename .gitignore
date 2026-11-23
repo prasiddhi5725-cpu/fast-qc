@@ -7,4 +7,4 @@ result.fastq
 !example_*.png
 actual.fastq
 *.gz
-
+.snakemake/
