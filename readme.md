@@ -14,6 +14,7 @@ python3 program.py -i test.fastq.gz
 - Reports read counts, read lengths, N bases, GC content, and quality statistics
 - Writes a new FASTQ file containing only the reads that pass a mean-quality threshold
 - Saves three plots: quality per position, read length distribution, and GC content per read
+- Runs multiple samples reproducibly via a `Snakemake` workflow (Snakefile), automatically discovering `.fastq` and `.fastq.gz` files in `data/`
 
 ### Statistics reported
 
@@ -57,7 +58,7 @@ python -m pip install -r requirements.txt
 ```
 
 `matplotlib` is needed for plots, and `pytest` for the tests. The core analysis uses only the Python standard library.
-
+`snakemake` is needed to run multi-sample workflow (installed in your environment/ `requirements.txt`)
 ---
 
 ## Usage
@@ -77,6 +78,20 @@ python3 program.py -i test.fastq
 | `--verbose` | Print per-read lines, read lengths, and per-position means | off |
 
 Without `--verbose`, only the summary is printed. This matters on large files, because printing a line for every read is very slow.
+
+## Snakemake workflow
+
+Place input `.fastq` or `.fastq.gz` files inside `data/`. The pipeline finds all samples automatically and writes outputs to `results/`.
+
+```bash
+# preview what will run
+snakemake -n
+
+# run all samples
+snakemake --cores 1
+
+# override the quality threshold (default is 20)
+snakemake --cores 1 --config threshold=25
 
 ### Examples
 
@@ -181,14 +196,14 @@ The tests cover the small functions: GC counting, GC percentage, quality decodin
 
 ```text
 .
+├── Snakefile         # multi-sample Snakemake workflow
 ├── program.py        # reading, validation, statistics, report, command line
 ├── plot.py           # the three plotting functions
 ├── test_main.py      # pytest tests
 ├── test.fastq        # small hand-made file for trying the tool
 ├── requirements.txt
+├── .gitignore
 └── README.md
-```
-
 ---
 
 ## Limitations
@@ -200,8 +215,6 @@ The tests cover the small functions: GC counting, GC percentage, quality decodin
 ## Planned
 
 - Paired-end mode
-- A Snakemake workflow to run it on many samples
-
 ---
 
 ## Author
