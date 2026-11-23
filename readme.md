@@ -59,6 +59,7 @@ python -m pip install -r requirements.txt
 
 `matplotlib` is needed for plots, and `pytest` for the tests. The core analysis uses only the Python standard library.
 `snakemake` is needed to run multi-sample workflow (installed in your environment/ `requirements.txt`)
+
 ---
 
 ## Usage
