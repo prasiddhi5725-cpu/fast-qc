@@ -9,7 +9,7 @@ def main():
     parser.add_argument("--input2",default=None,help="Second input file in fastq format")
     parser.add_argument("-t","--threshold",type=int, help="Choose the quality threshold for you file", default=20)
     parser.add_argument("-o","--output",default="filtered.fastq", help="Output file")
-    parser.add_argument("--output2",default="filtered2.fastq", help="Output file for second input")
+    parser.add_argument("--output2",default=None, help="Output file for second input")
     parser.add_argument("--plot",action="store_true",help="Save quality and read length plots")
     parser.add_argument("--verbose",action="store_true",help="Show individual data for all reads")
     parser.add_argument("--prefix",default="",help="Prefix for plot file names")
@@ -20,7 +20,7 @@ def main():
     output_file=args.output
     output_file2=args.output2
 
-    if uploaded_file2 is None and output_file2!="filtered2.fastq":
+    if uploaded_file2 is None and output_file2 is not None:
         print("Warning: You have specified an output file for the second input, but no second input file was provided. The output file will not be created.")
 
     line_number,total_bases,n_count,total_score,gc_count,read_length_list,read_gc_list,passed_reads,low_quality_reads,q_20,q_30,position_total,position_count,correct_file=process_file(uploaded_file,quality_threshold,output_file,args.verbose)
