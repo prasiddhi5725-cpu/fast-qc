@@ -8,3 +8,5 @@ result.fastq
 actual.fastq
 *.gz
 .snakemake/
+paired1.fastq
+paired2.fastq

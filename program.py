@@ -6,8 +6,10 @@ from plot import plot_position_mean,plot_read_lengths,plot_gc_percentage
 def main():
     parser=argparse.ArgumentParser(description="Upload a file in .fastq format.")
     parser.add_argument("-i","--input",required=True,help="Input a file in fastq format")
+    parser.add_argument("-input2",default=None,help="Second input file in fastq format")
     parser.add_argument("-t","--threshold",type=int, help="Choose the quality threshold for you file", default=20)
     parser.add_argument("-o","--output",default="filtered.fastq", help="Output file")
+    parser.add_argument("--output2",default="filtered2.fastq", help="Output file for second input")
     parser.add_argument("--plot",action="store_true",help="Save quality and read length plots")
     parser.add_argument("--verbose",action="store_true",help="Show individual data for all reads")
     parser.add_argument("--prefix",default="",help="Prefix for plot file names")
