@@ -20,8 +20,16 @@ def main():
     output_file=args.output
     output_file2=args.output2
 
+    if output_file in (uploaded_file, uploaded_file2) or output_file2 in (uploaded_file, uploaded_file2):
+        print("Error: Output file name cannot be the same as any input file name.")
+        sys.exit(1)
+
     if uploaded_file2 is None and output_file2 is not None:
         print("Warning: You have specified an output file for the second input, but no second input file was provided. The output file will not be created.")
+
+    if uploaded_file2 is not None and output_file2 is None:
+        print("Warning: You have specified a second input file, but no output file was provided for it. The output will be saved to 'filtered2.fastq' by default.")
+        output_file2 = "filtered2.fastq"
 
     line_number,total_bases,n_count,total_score,gc_count,read_length_list,read_gc_list,passed_reads,low_quality_reads,q_20,q_30,position_total,position_count,correct_file=process_file(uploaded_file,quality_threshold,output_file,args.verbose)
     if correct_file:
