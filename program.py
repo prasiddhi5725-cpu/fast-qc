@@ -20,10 +20,6 @@ def main():
     output_file=args.output
     output_file2=args.output2
 
-    if output_file in (uploaded_file, uploaded_file2) or output_file2 in (uploaded_file, uploaded_file2):
-        print("Error: Output file name cannot be the same as any input file name.")
-        sys.exit(1)
-
     if uploaded_file is None:
         print("Error: No input file specified.")
         sys.exit(1)
@@ -35,20 +31,38 @@ def main():
         print("Warning: You have specified a second input file, but no output file was provided for it. The output will be saved to 'filtered2.fastq' by default.")
         output_file2 = "filtered2.fastq"
 
-    line_number,total_bases,n_count,total_score,gc_count,read_length_list,read_gc_list,passed_reads,low_quality_reads,q_20,q_30,position_total,position_count,correct_file=process_file(uploaded_file,quality_threshold,output_file,args.verbose)
-    if correct_file:
-        print_report(line_number,total_bases,n_count,total_score,gc_count,read_length_list,read_gc_list,quality_threshold,passed_reads,low_quality_reads,q_20,q_30,position_total,position_count,args.verbose)
+    inputs=[uploaded_file]
+    outputs=[output_file]
 
-        if args.plot:
-            means=list(position_mean(position_total,position_count))
-            positions=list(range(1,len(means)+1))
-            plot_position_mean(positions,means,args.prefix+"quality_plot.png")
-            plot_read_lengths(read_length_list,args.prefix+"read_length_plot.png")
-            plot_gc_percentage(read_gc_list,args.prefix+"gc_plot.png")
+    if uploaded_file2 is not None:
+        inputs.append(uploaded_file2)
+        outputs.append(output_file2)
 
-    if not correct_file:
-        print("Warning!!",output_file,"is incomplete.")
-        sys.exit(1)
+    for names in outputs:
+        if names in inputs:
+            print("Error: Input and output file names must be different.")
+            sys.exit(1)
+
+    if uploaded_file2 is None:
+        print("Single-end mode selected.")
+        line_number,total_bases,n_count,total_score,gc_count,read_length_list,read_gc_list,passed_reads,low_quality_reads,q_20,q_30,position_total,position_count,correct_file=process_file(uploaded_file,quality_threshold,output_file,args.verbose)
+        if correct_file:
+            print_report(line_number,total_bases,n_count,total_score,gc_count,read_length_list,read_gc_list,quality_threshold,passed_reads,low_quality_reads,q_20,q_30,position_total,position_count,args.verbose)
+
+            if args.plot:
+                means=list(position_mean(position_total,position_count))
+                positions=list(range(1,len(means)+1))
+                plot_position_mean(positions,means,args.prefix+"quality_plot.png")
+                plot_read_lengths(read_length_list,args.prefix+"read_length_plot.png")
+                plot_gc_percentage(read_gc_list,args.prefix+"gc_plot.png")
+
+        if not correct_file:
+            print("Warning!!",output_file,"is incomplete.")
+            sys.exit(1)
+
+    else:
+        print("Paired-end mode selected.")
+        print("Paired-end mode is not yet implemented. Please use single-end mode for now.")
 
 def open_fastq(filename):
     if filename.endswith(".gz"):
