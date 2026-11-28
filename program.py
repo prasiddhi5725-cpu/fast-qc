@@ -24,6 +24,10 @@ def main():
         print("Error: Output file name cannot be the same as any input file name.")
         sys.exit(1)
 
+    if uploaded_file is None:
+        print("Error: No input file specified.")
+        sys.exit(1)
+    
     if uploaded_file2 is None and output_file2 is not None:
         print("Warning: You have specified an output file for the second input, but no second input file was provided. The output file will not be created.")
 
